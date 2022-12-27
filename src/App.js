@@ -5,16 +5,13 @@ import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import Typography from '@mui/material/Typography';
-import { CircularProgress } from '@mui/material';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
+import { CircularProgress, Rating } from '@mui/material';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
+import CryptoTable from './CryptoTable';
+import Modal from '@mui/material/Modal';
+import { Box } from '@mui/system';
+
 
 
 function App() {
@@ -22,13 +19,29 @@ function App() {
   const [markets, setMarkets] = useState({});
   const [sort, setSort] = useState({ marketCap: '', priceChange1d: '', change: '' });
   const [pageLoading, setPageLoading] = useState(false);
+  const [favorites, setFavorites] = useState([]);
+
+  const [open, setOpen] = useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+  const style = {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: 400,
+    bgcolor: 'white',
+    boxShadow: 24,
+    borderRadius: 2,
+    p: 4,
+  };
+
 
   useEffect(() => {
 
     async function fetchData() {
       setPageLoading(true);
       let response = await axios.get('https://api.coinstats.app/public/v1/coins');
-      console.log(response.data);
       setCoinsData(response.data.coins)
       setPageLoading(false);
     }
@@ -85,14 +98,50 @@ function App() {
     setCoinsData(data);
   }
 
+  const handleFavorites = (item) => {
+    let index = favorites.findIndex(i => i.id === item.id);
+    if (index !== -1) {
+      let fav = [...favorites];
+      fav.splice(index, 1);
+      setFavorites(fav);
+    }
+    else setFavorites([...favorites, item])
+  }
 
 
-  console.log(markets, 'markets')
   return (
     <div>
+      <nav className="navbar navbar-expand-lg navbar-light bg-light"
+        style={{ paddingLeft: "10vw", paddingRight: "10vw", display: "flex", justifyContent: "space-between" }}>
+        <a className="navbar-brand" href="#">Navbar</a>
+        <button className='favorites' onClick={handleOpen}>Favorites</button>
+      </nav>
+
+      <Modal
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box sx={style}>
+          <Typography id="modal-modal-title" variant="h6" component="h2" style={{ paddingBottom: "10px" }}>
+            Favorites
+          </Typography>
+          {favorites.length ?
+            favorites.map(item => (
+              <div className='icon-wrapper' style={{ display: "flex", justifyContent: "space-between", paddingBottom: "10px" }}>
+                <div className='icon-img-wrapper'><img src={item.icon} alt="item.name" /></div>
+                <div>{item.name}</div>
+                <div className='symbol' >{item.symbol}</div>
+              </div>
+            ))
+            : <Typography>No Favorites Added</Typography>}
+        </Box>
+      </Modal>
+
       <div className='banner'></div>
       <div className="App">
-      <h1 className='main-heading'>Crypto Markets, Prices and News</h1>
+        <h1 className='main-heading'>Crypto Markets, Prices and News</h1>
         {coinsData.length ?
           (<div>
             <div className='heading'>
@@ -116,6 +165,13 @@ function App() {
             {coinsData.map((item, index) => (
               <Accordion key={item.id}>
                 <AccordionSummary onClick={(e) => handleClick(e, item.id)}>
+                  <div className='star'>
+                    <Rating name="customized-10" onChange={() => handleFavorites(item)}
+                      disabled={favorites.find(i => i.id === item.id) || favorites.length < 3 ? false : true}
+                      value={favorites.find(i => i.id === item.id) ? 1 : 0}
+                      max={1}
+                    />
+                  </div>
                   <div className='header'>
                     <div className='rank'>{item.rank}</div>
                     <div className='icon-wrapper'>
@@ -134,38 +190,11 @@ function App() {
                 </AccordionSummary>
                 <AccordionDetails>
                   {markets[item.id] ?
-                    <TableContainer component={Paper}>
-                      <Table sx={{ minWidth: 650 }} aria-label="simple table">
-                        <TableHead>
-                          <TableRow>
-                            <TableCell>Exchange</TableCell>
-                            <TableCell align="right">Pair</TableCell>
-                            <TableCell align="right">Pair Price</TableCell>
-                            <TableCell align="right">Price</TableCell>
-                            <TableCell align="right">Volume</TableCell>
-                          </TableRow>
-                        </TableHead>
-                        <TableBody>
-                          {markets[item.id].map((row, index) => (
-                            <TableRow
-                              key={index}
-                              sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                            >
-                              <TableCell component="th" scope="row">
-                                {row.exchange}
-                              </TableCell>
-                              <TableCell align="right">{row.pair}</TableCell>
-                              <TableCell align="right">{row.pairPrice}</TableCell>
-                              <TableCell align="right">{row.price}</TableCell>
-                              <TableCell align="right">{row.volume}</TableCell>
-                            </TableRow>
-                          ))}
-                        </TableBody>
-                      </Table>
-                    </TableContainer>
+                    <CryptoTable list={markets[item.id]} />
                     : <CircularProgress />}
                 </AccordionDetails>
               </Accordion>
+
             ))}
           </div>)
           :

@@ -1,5 +1,5 @@
 .App {
-    width: 80%;
+    width: 90%;
     padding-top: 40px;
     margin: auto;
 
@@ -26,6 +26,8 @@
     padding: 20px 0;
     border-top-right-radius: 8px;
     border-top-left-radius: 8px;
+    font-weight: 800;
+    font-size: medium;
 }
 
 .icon-wrapper {
@@ -80,7 +82,18 @@
     color: aliceblue;
 }
 
-@media only screen and (max-width: 1200px) {
+.star {
+    position: absolute;
+    left: -35px;
+}
+
+.favorites {
+    padding: 0;
+    border: none;
+    background: none;
+}
+
+@media only screen and (max-width: 1280px) {
     .volume {
         display: none;
     }
@@ -93,7 +106,7 @@
     }
 }
 
-@media only screen and (max-width: 950px) {
+@media only screen and (max-width: 1170px) {
 
     .volume,
     .supply,
