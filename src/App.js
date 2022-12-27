@@ -1,5 +1,5 @@
 import './App.css';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import axios from 'axios';
 import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
@@ -191,7 +191,9 @@ function App() {
                 <AccordionDetails>
                   {markets[item.id] ?
                     <CryptoTable list={markets[item.id]} />
-                    : <CircularProgress />}
+                    : <Suspense fallback={<CircularProgress />}>
+                      <CircularProgress />
+                    </Suspense>}
                 </AccordionDetails>
               </Accordion>
 
