@@ -166,7 +166,7 @@ function App() {
               <Accordion key={item.id}>
                 <AccordionSummary onClick={(e) => handleClick(e, item.id)}>
                   <div className='star'>
-                    <Rating name="customized-10" onChange={() => handleFavorites(item)}
+                    <Rating name="simple-controlled" onChange={() => handleFavorites(item)}
                       disabled={favorites.find(i => i.id === item.id) || favorites.length < 3 ? false : true}
                       value={favorites.find(i => i.id === item.id) ? 1 : 0}
                       max={1}
