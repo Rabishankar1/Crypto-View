@@ -50,7 +50,7 @@ function App() {
   }, [])
 
 
-  const handleClick = async (event, coinId) => {
+  const handleClick = async coinId => {
     if (!markets[coinId]) {
       let response = await axios.get(`https://api.coinstats.app/public/v1/markets?coinId=${coinId}`);
       setMarkets({ ...markets, [coinId]: response.data });
@@ -164,7 +164,7 @@ function App() {
             </div>
             {coinsData.map((item, index) => (
               <Accordion key={item.id}>
-                <AccordionSummary onClick={(e) => handleClick(e, item.id)}>
+                <AccordionSummary onClick={() => handleClick(item.id)}>
                   <div className='star'>
                     <Rating name="simple-controlled" onChange={() => handleFavorites(item)}
                       disabled={favorites.find(i => i.id === item.id) || favorites.length < 3 ? false : true}
