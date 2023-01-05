@@ -189,11 +189,14 @@ function App() {
                   </div>
                 </AccordionSummary>
                 <AccordionDetails>
-                  {markets[item.id] ?
+                  {/* {markets[item.id] ?
                     <CryptoTable list={markets[item.id]} />
                     : <Suspense fallback={<CircularProgress />}>
                       <CircularProgress />
-                    </Suspense>}
+                    </Suspense>} */}
+                  {markets[item.id] && <Suspense fallback={<CircularProgress />}>
+                    <CryptoTable list={markets[item.id]} />
+                  </Suspense>}
                 </AccordionDetails>
               </Accordion>
 
